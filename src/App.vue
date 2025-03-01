@@ -79,7 +79,6 @@
                   help the environment by planting each one tree!
                 </p>
                 <br />
-                <button class="button button--main">Plant a tree now</button>
               </div>
             </div>
           </div>
