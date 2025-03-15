@@ -47,151 +47,115 @@
             </div>
           </div>
           <div class="header-content">
-            <div class="header-content__slide">
-              <h1 class="letters">Grow</h1>
+            <div
+              class="header-content__slide"
+              v-for="(slide, index) in slides"
+              :key="'header-' + index"
+            >
+              <h1 class="letters">{{ slide.title }}</h1>
               <div class="header-content__info">
-                <p>
-                  As an environmental charity, we’re on a mission to make it simple for everyone to
-                  help the environment by planting each one tree!
-                </p>
-                <br />
-                <button class="button button--main">Plant a tree now</button>
-              </div>
-            </div>
-
-            <div class="header-content__slide">
-              <h1 class="letters">Live</h1>
-              <div class="header-content__info">
-                <p>
-                  As an environmental charity, we’re on a mission to make it simple for everyone to
-                  help the environment by planting each one tree!
-                </p>
-                <br />
-                <button class="button button--main">Plant a tree now</button>
-              </div>
-            </div>
-
-            <div class="header-content__slide">
-              <h1 class="letters">Weed</h1>
-              <div class="header-content__info">
-                <p>
-                  As an environmental charity, we’re on a mission to make it simple for everyone to
-                  help the environment by planting each one tree!
-                </p>
+                <p>{{ slide.description }}</p>
                 <br />
               </div>
             </div>
           </div>
         </div>
-        <div class="header-bottom"></div>
       </div>
 
-      <swiper-slide class="slider__item">
+      <swiper-slide class="slider__item" v-for="(slide, index) in slides" :key="'swiper-' + index">
         <div
           class="slider__layer"
           data-swiper-parallax="35%"
-          style="background-image: url(/src/assets/img/slides/slide-1-layer-back.jpg)"
+          :style="{ backgroundImage: `url(${slide.layers.background})` }"
         ></div>
         <div class="slider__layer" data-swiper-parallax="25%">
-          <img src="/src/assets/img/slides/slide-1-layer-middle.png" />
+          <img :src="slide.layers.middle" alt="Middle layer" />
         </div>
         <div class="slider__layer" data-swiper-parallax="14%">
-          <img src="/src/assets/img/slides/slide-1-layer-front.png" /></div
-      ></swiper-slide>
-      <swiper-slide class="slider__item"
-        ><div
-          class="slider__layer"
-          data-swiper-parallax="35%"
-          style="background-image: url(/src/assets/img/slides/slide-2-layer-back.jpg)"
-        ></div>
-        <div class="slider__layer" data-swiper-parallax="25%">
-          <img src="/src/assets/img/slides/slide-2-layer-middle.png" />
-        </div>
-        <div class="slider__layer" data-swiper-parallax="14%">
-          <img src="/src/assets/img/slides/slide-2-layer-front.png" /></div
-      ></swiper-slide>
-      <swiper-slide class="slider__item"
-        ><div
-          class="slider__layer"
-          data-swiper-parallax="35%"
-          style="background-image: url(/src/assets/img/slides/slide-3-layer-back.jpg)"
-        ></div>
-        <div class="slider__layer" data-swiper-parallax="25%">
-          <img src="/src/assets/img/slides/slide-3-layer-middle.png" />
-        </div>
-        <div class="slider__layer" data-swiper-parallax="14%">
-          <img src="/src/assets/img/slides/slide-3-layer-front.png" /></div
+          <img :src="slide.layers.front" alt="Front layer" /></div
       ></swiper-slide>
     </swiper>
   </body>
 </template>
-<script>
+<script setup>
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Parallax, Mousewheel, Pagination } from 'swiper/modules'
-import { ref, defineComponent, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
-export default defineComponent({
-  components: {
-    Swiper,
-    SwiperSlide
+const slides = ref([
+  {
+    title: 'Grow',
+    description:
+      'As an environmental charity, we’re on a mission to make it simple for everyone to help the environment by planting each one tree!',
+    layers: {
+      background: '/src/assets/img/slides/slide-1-layer-back.jpg',
+      middle: '/src/assets/img/slides/slide-1-layer-middle.png',
+      front: '/src/assets/img/slides/slide-1-layer-front.png'
+    }
   },
-  setup() {
-    const isActive = ref(false)
-
-    const toggleButton = () => {
-      isActive.value = !isActive.value
-
-      const event = new CustomEvent('anim-menu-btn-clicked', {
-        detail: isActive.value
-      })
-
-      document.dispatchEvent(event)
+  {
+    title: 'Live',
+    description:
+      'As an environmental charity, we’re on a mission to make it simple for everyone to help the environment by planting each one tree!',
+    layers: {
+      background: '/src/assets/img/slides/slide-2-layer-back.jpg',
+      middle: '/src/assets/img/slides/slide-2-layer-middle.png',
+      front: '/src/assets/img/slides/slide-2-layer-front.png'
     }
-
-    const modules = [Parallax, Mousewheel, Pagination]
-
-    onMounted(() => {
-      // Добавляем класс .active для начального слайда
-      updateActiveSlide(0)
-
-      // Стилизация заголовков
-      document.querySelectorAll('.header-content h1').forEach((element) => {
-        element.innerHTML = element.textContent
-          .replace(/ (-|#|@){1}/g, (s) => s[1] + s[0])
-          .replace(/(\S*)/g, (match) => {
-            return match.replace(/\S(-|#|@)?/g, '<span class="letter">$&</span>')
-          })
-
-        element.querySelectorAll('.letter').forEach((letter, index) => {
-          letter.setAttribute('style', `z-index: -${index}; transition-duration: ${index / 5 + 1}s`)
-        })
-      })
-    })
-
-    const updateActiveSlide = (activeIndex) => {
-      const slides = document.querySelectorAll('.header-content__slide')
-      slides.forEach((slide, index) => {
-        if (index === activeIndex) {
-          slide.classList.add('active')
-        } else {
-          slide.classList.remove('active')
-        }
-      })
-    }
-
-    const onSlideChange = (swiper) => {
-      updateActiveSlide(swiper.activeIndex)
-    }
-
-    return {
-      isActive,
-      toggleButton,
-      modules,
-      onSlideChange
+  },
+  {
+    title: 'Weed',
+    description:
+      'As an environmental charity, we’re on a mission to make it simple for everyone to help the environment by planting each one tree!',
+    layers: {
+      background: '/src/assets/img/slides/slide-3-layer-back.jpg',
+      middle: '/src/assets/img/slides/slide-3-layer-middle.png',
+      front: '/src/assets/img/slides/slide-3-layer-front.png'
     }
   }
+])
+
+const isActive = ref(false)
+
+const toggleButton = () => {
+  isActive.value = !isActive.value
+
+  const event = new CustomEvent('anim-menu-btn-clicked', {
+    detail: isActive.value
+  })
+
+  document.dispatchEvent(event)
+}
+
+const modules = [Parallax, Mousewheel, Pagination]
+
+const updateActiveSlide = (activeIndex) => {
+  const slidesElements = document.querySelectorAll('.header-content__slide')
+  slidesElements.forEach((slide, index) => {
+    slide.classList.toggle('active', index === activeIndex)
+  })
+}
+
+const onSlideChange = (swiper) => {
+  updateActiveSlide(swiper.activeIndex)
+}
+
+onMounted(() => {
+  updateActiveSlide(0)
+
+  document.querySelectorAll('.header-content h1').forEach((element) => {
+    element.innerHTML = element.textContent
+      .replace(/ (-|#|@){1}/g, (s) => s[1] + s[0])
+      .replace(/(\S*)/g, (match) => {
+        return match.replace(/\S(-|#|@)?/g, '<span class="letter">$&</span>')
+      })
+
+    element.querySelectorAll('.letter').forEach((letter, index) => {
+      letter.setAttribute('style', `z-index: -${index}; transition-duration: ${index / 5 + 1}s`)
+    })
+  })
 })
 </script>
 
