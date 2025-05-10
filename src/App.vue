@@ -1,90 +1,102 @@
-<script setup lang="ts"></script>
-
 <template>
-  <body>
-    <swiper
-      :direction="'vertical'"
-      :slidesPerView="1"
-      :spaceBetween="0"
-      :parallax="true"
-      :mousewheel="true"
-      :speed="1700"
-      :pagination="{
-        clickable: true
-      }"
-      :modules="modules"
-      class="mySwiper"
-      @slideChange="onSlideChange"
-    >
-      <div class="slider-ui">
-        <div class="container header-wrapper">
-          <div class="top-line">
-            <div class="row">
-              <div class="col col--center">
-                <a href="#" class="logo">
-                  <img src="/src/assets/img/logo.svg" />
-                </a>
-              </div>
-              <div class="col col--center col--right col--lead">
-                <nav class="main-menu">
-                  <ul>
-                    <li><a href="#">Main</a></li>
-                    <li class="active"><span>Info</span></li>
-                    <li><a href="#">Contact</a></li>
-                  </ul>
-                </nav>
-                <a href="#" class="button button--top">Plant now</a>
-              </div>
-              <div class="col col--center">
-                <button
-                  class="submenu anim-menu-btn"
-                  :class="{ 'anim-menu-btn--state-b': isActive }"
-                  @click="toggleButton"
-                >
-                  <i class="anim-menu-btn__icon anim-menu-btn__icon--close"></i>
-                </button>
-              </div>
+  <Swiper
+    direction="vertical"
+    :slides-per-view="1"
+    :space-between="0"
+    :parallax="true"
+    :mousewheel="true"
+    :speed="1700"
+    :pagination="{ clickable: true }"
+    :modules="modules"
+    class="mySwiper"
+    @slide-change="onSlideChange"
+  >
+    <div class="slider-ui">
+      <div class="container header-wrapper">
+        <div class="top-line">
+          <div class="row">
+            <div class="col col--center">
+              <a href="#" class="logo">
+                <img src="/src/assets/img/logo.svg" alt="Logo" />
+              </a>
+            </div>
+            <div class="col col--center col--right col--lead">
+              <nav class="main-menu">
+                <ul>
+                  <li><a href="#"> Main </a></li>
+                  <li class="active">
+                    <span>Info</span>
+                  </li>
+                  <li><a href="#"> Contact </a></li>
+                </ul>
+              </nav>
+              <a href="#" class="button button--top"> Plant now </a>
+            </div>
+            <div class="col col--center">
+              <button
+                class="submenu anim-menu-btn"
+                :class="{ 'anim-menu-btn--state-b': isActive }"
+                @click="toggleButton"
+              >
+                <i class="anim-menu-btn__icon anim-menu-btn__icon--close"></i>
+              </button>
             </div>
           </div>
-          <div class="header-content">
-            <div
-              class="header-content__slide"
-              v-for="(slide, index) in slides"
-              :key="'header-' + index"
-            >
-              <h1 class="letters">{{ slide.title }}</h1>
-              <div class="header-content__info">
-                <p>{{ slide.description }}</p>
-                <br />
-              </div>
+        </div>
+        <div class="header-content">
+          <div
+            class="header-content__slide"
+            v-for="(slide, index) in slides"
+            :key="'header-' + index"
+          >
+            <h1 class="letters">
+              {{ slide.title }}
+            </h1>
+            <div class="header-content__info">
+              <p>{{ slide.description }}</p>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <swiper-slide class="slider__item" v-for="(slide, index) in slides" :key="'swiper-' + index">
-        <div
-          class="slider__layer"
-          data-swiper-parallax="35%"
-          :style="{ backgroundImage: `url(${slide.layers.background})` }"
-        ></div>
-        <div class="slider__layer" data-swiper-parallax="25%">
-          <img :src="slide.layers.middle" alt="Middle layer" />
-        </div>
-        <div class="slider__layer" data-swiper-parallax="14%">
-          <img :src="slide.layers.front" alt="Front layer" /></div
-      ></swiper-slide>
-    </swiper>
-  </body>
+    <SwiperSlide v-for="(slide, index) in slides" :key="'swiper-' + index" class="slider__item">
+      <div
+        class="slider__layer"
+        data-swiper-parallax="35%"
+        :style="{ backgroundImage: `url(${slide.layers.background})` }"
+      ></div>
+      <div class="slider__layer" data-swiper-parallax="25%">
+        <img :src="slide.layers.middle" alt="Middle layer" />
+      </div>
+      <div class="slider__layer" data-swiper-parallax="14%">
+        <img :src="slide.layers.front" alt="Front layer" />
+      </div>
+    </SwiperSlide>
+  </Swiper>
 </template>
-<script setup>
+
+<script setup lang="ts">
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Parallax, Mousewheel, Pagination } from 'swiper/modules'
 import { ref, onMounted } from 'vue'
+import type { Swiper as SwiperClass } from 'swiper/types'
 
-const slides = ref([
+interface Layer {
+  background: string
+  middle: string
+  front: string
+}
+
+interface Slide {
+  title: string
+  description: string
+  layers: Layer
+}
+
+const slides = ref<Slide[]>([
   {
     title: 'Grow',
     description:
@@ -119,7 +131,7 @@ const slides = ref([
 
 const isActive = ref(false)
 
-const toggleButton = () => {
+function toggleButton(): void {
   isActive.value = !isActive.value
 
   const event = new CustomEvent('anim-menu-btn-clicked', {
@@ -131,14 +143,14 @@ const toggleButton = () => {
 
 const modules = [Parallax, Mousewheel, Pagination]
 
-const updateActiveSlide = (activeIndex) => {
+function updateActiveSlide(activeIndex: number): void {
   const slidesElements = document.querySelectorAll('.header-content__slide')
   slidesElements.forEach((slide, index) => {
     slide.classList.toggle('active', index === activeIndex)
   })
 }
 
-const onSlideChange = (swiper) => {
+function onSlideChange(swiper: SwiperClass): void {
   updateActiveSlide(swiper.activeIndex)
 }
 
@@ -146,11 +158,12 @@ onMounted(() => {
   updateActiveSlide(0)
 
   document.querySelectorAll('.header-content h1').forEach((element) => {
-    element.innerHTML = element.textContent
-      .replace(/ (-|#|@){1}/g, (s) => s[1] + s[0])
-      .replace(/(\S*)/g, (match) => {
-        return match.replace(/\S(-|#|@)?/g, '<span class="letter">$&</span>')
-      })
+    element.innerHTML =
+      element.textContent
+        ?.replace(/ (-|#|@){1}/g, (s) => s[1] + s[0])
+        .replace(/(\S*)/g, (match) => {
+          return match.replace(/\S(-|#|@)?/g, '<span class="letter">$&</span>')
+        }) ?? ''
 
     element.querySelectorAll('.letter').forEach((letter, index) => {
       letter.setAttribute('style', `z-index: -${index}; transition-duration: ${index / 5 + 1}s`)
